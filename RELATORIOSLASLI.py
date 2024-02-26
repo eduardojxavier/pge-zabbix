@@ -2,8 +2,8 @@ import requests
 import json
 
 # Parâmetros de autenticação
-url = 'http://192.168.5.15/api_jsonrpc.php'
-user = 'Admin'
+url = 'http://192.168.5.15/zabbix'
+username = 'Admin'
 password = 'zabbix'
 
 # Método de autenticação
@@ -11,7 +11,7 @@ auth = {
     'jsonrpc': '2.0',
     'method': 'user.login',
     'params': {
-        'username': user,
+        'username': username,
         'password': password,
     },
     'id': 1,

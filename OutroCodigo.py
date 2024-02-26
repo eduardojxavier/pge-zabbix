@@ -5,7 +5,7 @@ from datetime import timedelta
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-url = "http://192.168.5.15/zabbix"
+url = "http://192.168.70.120/zabbix"
 headers = {
     "Content-Type": "application/json"
 }

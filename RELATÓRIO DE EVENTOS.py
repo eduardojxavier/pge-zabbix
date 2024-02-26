@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 import json
 import pytz
+import pandas as pd
 
 URL = 'http://192.168.5.15/zabbix'
 USERNAME = 'Admin'
@@ -20,11 +21,12 @@ except Exception as erro:
 
 def get_history(): #Função para saber quando a trigger disparou
 
-    dataInicio = 1708686000
-    dataFim = 1708743480
+    dataInicio = 1708947000
+    dataFim = 1708972200
+    reconhecido = False
 
     lista_eventos = []  #lista para guardar os eventos onde r_eventid não seja 0.
-    lista_duracao = [] 
+    lista_reconhecidos = [] 
     # teste = 136191
 
     fuso_horario_recife = pytz.timezone('America/Recife')
@@ -32,7 +34,8 @@ def get_history(): #Função para saber quando a trigger disparou
     abertura_evento = zapi.event.get({'output':['eventid','name','host','severity','clock','r_eventid'],
                                     'selectHosts':['hostid','host'],
                                     'time_from': dataInicio,
-                                    'time_till': dataFim})#"eventids": 136191 "eventids": teste
+                                    'time_till': dataFim,
+                                    'acknowledged': reconhecido})#"eventids": 136191 "eventids": teste' acknowledged': reconhecido
     
 
     eventid = 'eventid' 
@@ -41,7 +44,9 @@ def get_history(): #Função para saber quando a trigger disparou
     r_eventid = 'r_eventid'
     severity = 'severity'
     host = 'host'
-
+    
+    acknowledged='acknowledged'
+    
     #converter o json em uma lista de dicionários
     converter_json = json.dumps(abertura_evento)
     dicionario_abertura_evento = json.loads(converter_json)
@@ -53,7 +58,7 @@ def get_history(): #Função para saber quando a trigger disparou
         severidade_evento = i[severity]
 
 
-        if i[r_eventid] != '0' and (i[severity] == '4' or i[severity] == '5'): 
+        if (i[r_eventid] != '0') and (i[severity] == '4' or i[severity] == '5'): 
             lista_eventos.append(i)
             # print (lista_eventos)
             
@@ -69,6 +74,7 @@ def get_history(): #Função para saber quando a trigger disparou
                 host_evento = j['hosts'][0]['host']
                 
                 
+                
                 fechamento_evento = zapi.event.get({"output":['clock'],
                                                     "eventids": id_retorno_evento})
                 
@@ -80,10 +86,13 @@ def get_history(): #Função para saber quando a trigger disparou
                     horaFinal = data_hora_fechamento.strftime('%d-%m-%Y %H:%M:%S')
 
             duracaoEvento = data_hora_fechamento - data_hora        
-            
-            # print(id_inicio_evento, nome_evento, host_evento, severidade_evento, horaInicio, horaFinal, duracaoEvento) 
-            print(host_evento, nome_evento, severidade_evento, horaInicio, horaFinal, duracaoEvento)                
-            
+
+
+            # print(acknowledged)
+            print(id_inicio_evento, nome_evento, host_evento, severidade_evento, horaInicio, horaFinal, duracaoEvento, acknowledged) 
+            # print(host_evento, nome_evento, severidade_evento, horaInicio, horaFinal, duracaoEvento)      
+
+
 
 
 
