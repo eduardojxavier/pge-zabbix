@@ -95,17 +95,15 @@ def get_history(lista_eventos, lista_final):
             mascara = "%Y-%m-%d %H:%M:%S"
             ini = datetime.strptime(horaInicio, mascara)
             fim = datetime.strptime(horaFinal, mascara)
-
             di = abs(relativedelta(ini, fim))
-
             tempoEvento = (f'{di.days} dias, {di.hours} horas, {di.minutes} minutos')
 
             resultado = id_inicio_evento, nome_evento, host_evento, severidade, horaInicio, horaFinal, tempoEvento, reconhecido
-                 
-            # lista_final.append(resultado)
-            # print(lista_final)
-            print(resultado)
+            
+            lista_final.append(resultado)
 
+    print(lista_final)
+    print("Executado com sucesso!")
 
 
 
