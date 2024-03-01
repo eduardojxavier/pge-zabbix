@@ -1,5 +1,7 @@
 from zabbix_api import ZabbixAPI
-from datetime import datetime
+import datetime
+# from datetime import datetime
+import time
 from dateutil.relativedelta import relativedelta
 import json
 import pytz
@@ -23,28 +25,42 @@ lista_final = []
 
 
 
-def get_history(lista_eventos, lista_final): 
 
-    dataInicio = 1708999200
-    dataFim = 1709258400
- 
+def converterData():
+
+    print("Data Inicial do Relatório")
+    diaIni = int(input("Entre com o dia: "))
+    mesIni = int(input("Entre com o mês: "))
+    anoIni = int(input("Entre com o ano: "))
+
+    criaDataInicio = datetime.datetime(anoIni, mesIni, diaIni, 0,1)
+    dataInicio = time.mktime(criaDataInicio.timetuple())
+
+    print("Data Final do Relatório")
+    diaFim = int(input("Entre com o dia: "))
+    mesFim = int(input("Entre com o mês: "))
+    anoFim = int(input("Entre com o ano: "))
+
+    criaDataFinal = datetime.datetime(anoFim, mesFim, diaFim, 23, 59)
+    dataFinal = time.mktime(criaDataFinal.timetuple())
+
+    get_history(lista_eventos, lista_final, dataInicio, dataFinal)
+    # print(dataInicio, dataFinal)
+    # return dataInicio, dataFinal
+
+    
+def get_history(lista_eventos, lista_final, dataInicio, dataFinal): 
+
+    
     fuso_horario_recife = pytz.timezone('America/Recife')
 
     abertura_evento = zapi.event.get({'output':['eventid','name','host','severity','clock','r_eventid','acknowledged'],
                                     'selectHosts':['hostid','host'],
                                     'time_from': dataInicio,
-                                    'time_till': dataFim,
+                                    'time_till': dataFinal,
                                     })   
 
-     
-    
-    eventid = 'eventid' 
-    name = 'name'
-    horaInicioEvento = 'clock'
-    r_eventid = 'r_eventid'
-    severity = 'severity'
-    host = 'host'
-        
+         
     #converter o json em uma lista de dicionários
     converter_json = json.dumps(abertura_evento)
     dicionario_abertura_evento = json.loads(converter_json)
@@ -61,7 +77,7 @@ def get_history(lista_eventos, lista_final):
         eventoReconhecido = i['acknowledged']
 
 
-        if (i[r_eventid] != '0') and (i[severity] == '4' or i[severity] == '5'): 
+        if (id_retorno_evento != '0') and (severidade_evento == '4' or severidade_evento == '5'): 
             lista_eventos.append(i)
            
             if severidade_evento == "4":
@@ -77,7 +93,7 @@ def get_history(lista_eventos, lista_final):
 
             for j in lista_eventos:
                 converte_hora = int(j['clock'])
-                data_hora = datetime.fromtimestamp(converte_hora,fuso_horario_recife)
+                data_hora = datetime.datetime.fromtimestamp(converte_hora,fuso_horario_recife)
                 horaInicio = data_hora.strftime("%Y-%m-%d %H:%M:%S")
                       
                 
@@ -88,13 +104,13 @@ def get_history(lista_eventos, lista_final):
                 dicionario_fechamento_evento = json.loads(converter_json_fechamento)
                 for k in dicionario_fechamento_evento:
                     converte_hora_fechamento = int(k['clock'])
-                    data_hora_fechamento = datetime.fromtimestamp(converte_hora_fechamento, fuso_horario_recife)
+                    data_hora_fechamento = datetime.datetime.fromtimestamp(converte_hora_fechamento, fuso_horario_recife)
                     horaFinal = data_hora_fechamento.strftime("%Y-%m-%d %H:%M:%S")
 
             #Converter por extenso o tempo
             mascara = "%Y-%m-%d %H:%M:%S"
-            ini = datetime.strptime(horaInicio, mascara)
-            fim = datetime.strptime(horaFinal, mascara)
+            ini = datetime.datetime.strptime(horaInicio, mascara)
+            fim = datetime.datetime.strptime(horaFinal, mascara)
             di = abs(relativedelta(ini, fim))
             tempoEvento = (f'{di.days} dias, {di.hours} horas, {di.minutes} minutos')
 
@@ -102,10 +118,16 @@ def get_history(lista_eventos, lista_final):
             
             lista_final.append(resultado)
 
+
+
     print(lista_final)
     print("Executado com sucesso!")
 
 
 
 
-print(get_history(lista_eventos,lista_final))
+
+if __name__ == "__main__":
+
+    converterData()
+    

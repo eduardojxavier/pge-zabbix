@@ -1,14 +1,14 @@
-import json
+import datetime
+import time
 
-dados = """
-    [{"eventid": "1"}, {"eventid": "4"}, {"eventid": "10"}, {"eventid": "20"}, {"eventid": "32"}, {"eventid": "33"}]
-"""
+diaIni = 29
+mesIni = 2
+anoIni = 2024
 
-# Converter a string JSON em uma lista de dicionários
-lista_de_dicionarios = json.loads(dados)
+date_time = datetime.datetime(anoIni, mesIni, diaIni, 23,59)
 
-# Acessar a chave 'eventid' para cada dicionário na lista
-chave_desejada = "eventid"
-valores = [dicionario[chave_desejada] for dicionario in lista_de_dicionarios]
+print(date_time)
 
-print(valores)
+a = time.mktime(date_time.timetuple())
+
+print(a)
