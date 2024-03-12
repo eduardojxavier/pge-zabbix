@@ -7,9 +7,9 @@ import json
 import pytz
 import pandas as pd
 
-URL = ''
-USERNAME = ''
-PASSWORD = ''
+URL = 'http://192.168.70.120/zabbix'
+USERNAME = 'eduardo.filho'
+PASSWORD = 'Dudu@242255'
 
 try:
     zapi = ZabbixAPI(URL, timeout=180)
@@ -22,8 +22,7 @@ except Exception as erro:
 
 lista_eventos = [] 
 lista_final = [] 
-
-
+lista_tempo = []
 
 
 def converterData():
@@ -44,12 +43,11 @@ def converterData():
     criaDataFinal = datetime.datetime(anoFim, mesFim, diaFim, 23, 59)
     dataFinal = time.mktime(criaDataFinal.timetuple())
 
-    get_history(lista_eventos, lista_final, dataInicio, dataFinal)
-    # print(dataInicio, dataFinal)
-    # return dataInicio, dataFinal
-
+    print("Executando relatório")
+    get_history(lista_eventos, lista_final, dataInicio, dataFinal, lista_tempo)
+ 
     
-def get_history(lista_eventos, lista_final, dataInicio, dataFinal): 
+def get_history(lista_eventos, lista_final, dataInicio, dataFinal, lista_tempo): 
 
     
     fuso_horario_recife = pytz.timezone('America/Recife')
@@ -117,14 +115,24 @@ def get_history(lista_eventos, lista_final, dataInicio, dataFinal):
             resultado = id_inicio_evento, nome_evento, host_evento, severidade, horaInicio, horaFinal, tempoEvento, reconhecido
             
             lista_final.append(resultado)
+    
 
+    for evento in lista_final:
+        tempo_indisponibilidade = evento[6]
+        dias, horas, minutos = tempo_indisponibilidade.split(', ')
+        dias = int(dias.split()[0])
+        horas = int(horas.split()[0])
+        minutos = int(minutos.split()[0])
 
+        total_horas_indisponibilidade = (dias * 24 * 60) + (horas * 60) + minutos 
+
+        lista_tempo.append(total_horas_indisponibilidade)
+   
 
     print(lista_final)
+    print('Indisponibilidade de',sum(lista_tempo),'minutos.')
+
     print("Executado com sucesso!")
-
-
-
 
 
 if __name__ == "__main__":
