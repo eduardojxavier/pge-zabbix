@@ -8,8 +8,8 @@ import pytz
 import pandas as pd
 
 URL = 'http://192.168.70.120/zabbix'
-USERNAME = 'eduardo.filho'
-PASSWORD = 'Dudu@242255'
+USERNAME = ''
+PASSWORD = ''
 
 try:
     zapi = ZabbixAPI(URL, timeout=180)
